@@ -85,6 +85,21 @@ reminderdocs-modernized/
 | `/login`   | Login                    |
 | `/register`| Register                 |
 
+## Deployment (Render)
+
+This is a static SPA — deploy it as a **Render Static Site**, not a Web Service.
+
+**Option A — Blueprint (recommended):** Render Dashboard → **New → Blueprint** → select this repo. The included `render.yaml` configures everything (build command, `dist` publish folder, SPA rewrite, asset caching).
+
+**Option B — Manual Static Site:**
+- Build Command: `npm install && npm run build`
+- Publish Directory: `dist`
+- Add a rewrite rule: `/* → /index.html` (Rewrite) — required so client-side routes like `/pricing` and `/login` work on refresh. The `public/_redirects` file also covers this automatically.
+
+**Option C — Web Service fallback** (if you must use a Web Service):
+- Build Command: `npm install && npm run build`
+- Start Command: `npm run preview -- --host 0.0.0.0 --port $PORT`
+
 ## Notes
 
 - **Login / Register** are UI-only. The original `login.html` / `register.html` were saved app shells (empty `<div id="root">`) with no usable markup, so clean auth forms were built in the same design system. Wire `handleSubmit` in each page to your real auth backend (e.g. Supabase) before production.

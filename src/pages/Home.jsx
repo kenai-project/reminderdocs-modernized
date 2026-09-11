@@ -1,6 +1,6 @@
 import RoadScene from '../components/RoadScene.jsx';
 import DocumentChain from '../components/DocumentChain.jsx';
-import JourneyScene from '../components/JourneyScene.jsx';
+import CinematicJourney from '../components/cinematic/CinematicJourney.jsx';
 import VehicleParade from '../components/VehicleParade.jsx';
 import Benefits from '../components/Benefits.jsx';
 import KeepMoving from '../components/KeepMoving.jsx';
@@ -13,7 +13,7 @@ export default function Home() {
     <>
       <RoadScene />
       <DocumentChain />
-      <JourneyScene />
+      <CinematicJourney />
       <VehicleParade />
       <Benefits />
       <KeepMoving />

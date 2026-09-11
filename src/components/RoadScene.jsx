@@ -1,30 +1,32 @@
 import { Link } from 'react-router-dom';
-import CarArt from './CarArt.jsx';
+import RoadSurface from './cinematic/RoadSurface.jsx';
+import MovingCar from './cinematic/MovingCar.jsx';
 import Parallax from './Parallax.jsx';
 import Reveal from './Reveal.jsx';
 import { HERO_DOCS } from '../data/story.js';
 
-// S1 — cinematic hero: real night-highway photo with slow Ken-Burns zoom,
-// the ReminderDocs car driving across the road in the foreground, document
-// chips floating at different parallax depths, headline on top.
+// S1 — cinematic journey hero. Depth stack (slowest → fastest):
+//   city photo (Ken-Burns, slowest parallax) → road plane (medium) →
+//   document chips (depth accents) → the car (foreground, controlled drift).
+// The car travels ON the RoadSurface plane; lane dashes flowing toward the
+// viewer create the forward-motion feeling.
 export default function RoadScene() {
   return (
     <section className="hero-scene">
-      <Parallax speed={0.07} className="scene-layer">
-        <div className="photo-bg hero-photo" role="img" aria-label="Night highway with light trails" />
+      {/* BACKGROUND — city/sky, slowest */}
+      <Parallax speed={0.05} className="scene-layer">
+        <div className="photo-bg hero-photo" role="img" aria-label="City skyline at dusk above a highway" />
       </Parallax>
       <div className="photo-veil hero-veil" aria-hidden="true" />
-      <div className="scene-glow" aria-hidden="true" />
 
-      {/* The car — middle layer, gently bobbing as it drives */}
-      <Parallax speed={-0.05} className="scene-layer">
-        <div className="scene-car">
-          <CarArt type="car" className="car-art" />
-        </div>
+      {/* MIDGROUND — the perspective road the car drives on */}
+      <Parallax speed={0.11} className="scene-layer">
+        <RoadSurface />
       </Parallax>
 
+      {/* DOCUMENT CARDS — anchored around the journey, not random floats */}
       {HERO_DOCS.map((doc, i) => (
-        <Parallax key={doc.code} speed={-0.08 - i * 0.03} className="scene-layer">
+        <Parallax key={doc.code} speed={-0.07 - i * 0.03} className="scene-layer">
           <div className={`float-chip chip-${i + 1}`} style={{ animationDelay: `${i * 0.7}s` }}>
             <span className="chip-icon" aria-hidden="true">{doc.icon}</span>
             <span>
@@ -34,6 +36,11 @@ export default function RoadScene() {
           </div>
         </Parallax>
       ))}
+
+      {/* FOREGROUND — the car, travelling on the road */}
+      <Parallax speed={-0.1} className="scene-layer">
+        <MovingCar />
+      </Parallax>
 
       <div className="container scene-copy">
         <Reveal className="scene-copy-inner">

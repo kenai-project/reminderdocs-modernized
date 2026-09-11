@@ -113,24 +113,224 @@
 .float-chip b { display: block; font-size: 13px; letter-spacing: 0.05em; color: #fff; }
 .float-chip small { color: rgba(255, 255, 255, 0.72); font-size: 11px; }
 .chip-icon { font-size: 20px; }
-.chip-1 { top: 16%; left: 7%; }
-.chip-2 { top: 30%; right: 6%; }
-.chip-3 { bottom: 38%; left: 12%; }
-.chip-4 { top: 13%; right: 27%; }
+.chip-1 { top: 17%; left: 6%; }
+.chip-2 { top: 44%; right: 5%; }
+.chip-3 { bottom: 26%; left: 9%; }
+.chip-4 { top: 12%; right: 22%; }
 @keyframes chipFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-/* The car, driving across the bottom of the photo hero */
-.scene-car {
+/* ---------- S1b — perspective road plane ---------- */
+/* Occupies the lower part of the hero; the car drives ON this plane. */
+.road-stage {
+  position: absolute;
+  inset: 52% 0 0 0; /* road world: bottom half of the hero */
+  perspective: 320px; /* enables the 3D lane-strip foreshortening */
+  overflow: hidden;
+}
+
+/* glow where the road meets the city horizon */
+.horizon-glow {
+  position: absolute;
+  top: -6%;
+  left: 50%;
+  width: 130%;
+  height: 34%;
+  transform: translateX(-50%);
+  background: radial-gradient(46% 82% at 50% 0%, rgba(94, 158, 255, 0.34), rgba(94, 158, 255, 0.08) 55%, transparent 78%);
+  filter: blur(6px);
+}
+.horizon-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 46%;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(190, 222, 255, 0.75), transparent);
+  box-shadow: 0 0 18px 4px rgba(120, 180, 255, 0.45);
+}
+
+/* asphalt — trapezoid: narrow at the horizon, full width at the foreground */
+.road-asphalt {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(43.5% 0, 56.5% 0, 100% 100%, 0 100%);
+  background:
+    radial-gradient(120% 90% at 50% 118%, rgba(64, 96, 138, 0.5), transparent 60%),
+    linear-gradient(180deg, #1b2637 0%, #141d2c 34%, #0e1521 100%);
+}
+/* subtle asphalt grain + darker wheel tracks */
+.road-asphalt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: inherit;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.022) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, transparent 42%, rgba(2, 8, 20, 0.42) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
+.road-asphalt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: inherit;
+  background: linear-gradient(90deg, transparent 24%, rgba(4, 10, 20, 0.5) 34%, transparent 46%, transparent 54%, rgba(4, 10, 20, 0.5) 66%, transparent 76%);
+  opacity: 0.55;
+}
+
+/* solid edge lines — follow the widening sides of the road */
+.road-edge {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(226, 240, 255, 0.28), rgba(226, 240, 255, 0.85));
+}
+.edge-left { clip-path: polygon(43.1% 0, 44.2% 0, 3.4% 100%, 0 100%); }
+.edge-right { clip-path: polygon(55.8% 0, 56.9% 0, 100% 100%, 96.6% 100%); }
+
+/* centre lane dashes — 3D-rotated strip; dashes flow DOWN = toward the
+   viewer, and the rotation compresses spacing toward the horizon (true
+   perspective foreshortening). */
+.lane-strip {
+  position: absolute;
+  top: -1%;
+  bottom: 4%;
+  left: 50%;
+  width: 52px;
+  transform: translateX(-50%) perspective(320px) rotateX(58deg);
+  transform-origin: top center;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(244, 249, 255, 0.95) 0 30px,
+    transparent 30px 84px
+  );
+  border-radius: 4px;
+  animation: laneFlow 1.15s linear infinite;
+  will-change: background-position;
+}
+@keyframes laneFlow {
+  from { background-position-y: 0; }
+  to { background-position-y: 84px; }
+}
+
+/* light sheen + distance haze for depth */
+.road-sheen {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(43.5% 0, 56.5% 0, 100% 100%, 0 100%);
+  background: radial-gradient(52% 58% at 50% 88%, rgba(120, 178, 255, 0.16), transparent 72%);
+}
+.road-haze {
+  position: absolute;
+  top: -2%;
+  left: 0;
+  right: 0;
+  height: 26%;
+  background: linear-gradient(180deg, rgba(10, 22, 38, 0.9), transparent);
+}
+
+/* ---------- S1c — the car (grounded, forward motion) ---------- */
+/* Outer wrapper: slow lane drift (gentle horizontal settle, not a bounce). */
+.moving-car {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 9vh;
+  bottom: 6.5vh;
   margin: 0 auto;
-  width: min(320px, 58vw);
-  animation: carBob 3.6s ease-in-out infinite;
+  width: min(330px, 60vw);
+  animation: carDrift 9.5s ease-in-out infinite;
+  will-change: transform;
 }
-.car-art { width: 100%; height: auto; display: block; filter: drop-shadow(0 22px 30px rgba(2, 8, 20, 0.7)); }
-@keyframes carBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes carDrift {
+  0%, 100% { transform: translateX(-14px); }
+  50% { transform: translateX(14px); }
+}
+
+/* Inner wrapper: 2px suspension micro-movement — road feel, never floating. */
+.car-susp {
+  position: relative;
+  animation: carSuspension 2.6s ease-in-out infinite;
+}
+@keyframes carSuspension {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.car-art {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 18px 22px rgba(2, 8, 20, 0.66));
+}
+
+/* speed streaks trailing behind the car — forward-motion cue */
+.speed-streak {
+  position: absolute;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(159, 208, 255, 0.75));
+  animation: streakFly 1.15s linear infinite;
+  opacity: 0;
+  z-index: 0;
+}
+.speed-streak.s1 { top: 38%; left: -34%; width: 30%; animation-delay: 0s; }
+.speed-streak.s2 { top: 55%; left: -42%; width: 38%; animation-delay: 0.38s; }
+.speed-streak.s3 { top: 70%; left: -28%; width: 24%; animation-delay: 0.76s; }
+@keyframes streakFly {
+  0% { transform: translateX(0); opacity: 0; }
+  22% { opacity: 0.9; }
+  100% { transform: translateX(58px); opacity: 0; }
+}
+
+/* contact shadow pinned under the wheels — anchors the car to the road */
+.car-contact {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 74%;
+  height: 16px;
+  transform: translateX(-50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(1, 5, 12, 0.62), transparent 72%);
+  filter: blur(2px);
+  animation: contactBreathe 2.6s ease-in-out infinite;
+  z-index: 0;
+}
+@keyframes contactBreathe {
+  0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.95; }
+  50% { transform: translateX(-50%) scaleX(1.045); opacity: 0.8; }
+}
+
+/* ---------- S1d — responsive scene ---------- */
+@media (max-width: 900px) {
+  .road-stage { inset: 56% 0 0 0; perspective: 260px; }
+  .lane-strip { width: 40px; }
+  .chip-1 { left: 4%; }
+  .chip-4 { right: 12%; }
+}
+@media (max-width: 640px) {
+  .road-stage { inset: 58% 0 0 0; perspective: 210px; }
+  .road-edge { opacity: 0.75; }
+  .lane-strip { width: 30px; bottom: 2%; }
+  .moving-car { width: min(230px, 64vw); bottom: 5vh; }
+  .float-chip { transform: scale(0.82); transform-origin: center; }
+  .chip-2 { top: 48%; right: 4%; }
+  .chip-3 { bottom: 22%; left: 4%; }
+}
+
+/* ---------- S1e — reduced motion: static composition ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo { animation: none; }
+  .lane-strip,
+  .moving-car,
+  .car-susp,
+  .car-contact,
+  .speed-streak,
+  .float-chip { animation: none; }
+  .speed-streak { display: none; }
+}
 
 .scene-copy { position: relative; z-index: 5; text-align: center; }
 .scene-copy h1 { color: #fff; margin: 18px 0; text-shadow: 0 4px 30px rgba(2, 8, 20, 0.6); }

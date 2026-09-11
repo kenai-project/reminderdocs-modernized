@@ -1,0 +1,133 @@
+/* ============================================================
+   Cinematic journey — ONE controller, ONE sticky viewport.
+   All acts are absolutely stacked inside the same pinned stage;
+   their opacity/transform/filter come from sceneTimeline.js.
+   NOTE: the outer section must NOT use overflow:hidden (sticky).
+   ============================================================ */
+
+.cine {
+  position: relative;
+  min-height: 500vh; /* stable scroll length for the 5 acts */
+  color: #fff;
+  background: linear-gradient(180deg, #0b1830 0%, #0c1d33 50%, #0b1830 100%);
+}
+
+/* the single sticky viewport */
+.cine-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden; /* safe here: this element is itself the sticky box */
+  display: flex;
+  flex-direction: column;
+  padding: 84px 20px 34px;
+}
+
+/* stage = shared canvas for all acts */
+.cine-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* every act is a full-size layer; only timing decides visibility */
+.cine-scene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+}
+.cine-scene > * { grid-area: 1 / 1; } /* stack a scene's own sub-layers */
+
+/* strict stacking order: later acts paint above earlier ones, so an
+   incoming act always covers an outgoing one during handoff */
+.cine-scene.doc { z-index: 2; }
+.cine-scene.expiry { z-index: 3; }
+.cine-scene.reminder { z-index: 4; }
+.cine-scene.notif { z-index: 5; }
+.cine-scene.dash { z-index: 6; }
+
+/* ACT 1 — document pills condensing into the insurance card */
+.doc-chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 220px;
+}
+.doc-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 40px rgba(2, 8, 20, 0.45);
+}
+.doc-chip b { font-size: 12.5px; letter-spacing: 0.05em; color: #fff; }
+.doc-chip span { font-size: 10.5px; color: rgba(255, 255, 255, 0.66); }
+
+/* ACT 2 — insurance card floats above the big countdown */
+.expiry-doc { transform-origin: center; box-shadow: 0 40px 90px rgba(2, 8, 20, 0.7); }
+
+/* ACT 3 — card folding into the phone */
+.handoff-doc { transform-origin: center; }
+
+/* ACT 4 — dimmed phone backdrop + focused notification */
+.notif-phone-bg {
+  display: grid;
+  place-items: center;
+  transform-origin: center;
+}
+.notif-focus {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: min(520px, 90vw);
+  padding: 26px 30px;
+  border-radius: 22px;
+  background: rgba(16, 28, 48, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 50px 120px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(120, 180, 255, 0.12);
+}
+.notif-focus b { display: block; color: #fff; font-size: 19px; }
+.notif-focus small { display: block; margin: 7px 0 12px; color: rgba(255, 255, 255, 0.78); font-size: 14px; }
+.notif-focus .notif-bell { font-size: 34px; }
+.notif-focus .notif-cta { color: #9cd7ff; font-size: 13.5px; font-weight: 800; letter-spacing: 0.03em; }
+
+/* the car bridging hero → story (bottom of the pinned viewport) */
+.cine-car {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px) {
+  .cine { min-height: 400vh; }
+  .cine-pin { padding-top: 72px; }
+  .j-count strong { font-size: clamp(78px, 21vw, 140px); }
+  .doc-chips { gap: 8px; margin-bottom: 180px; }
+  .doc-chip { padding: 9px 13px; }
+  .notif-focus { padding: 20px 22px; }
+  .notif-focus b { font-size: 16px; }
+  .notif-focus small { font-size: 12.5px; }
+  .notif-focus .notif-bell { font-size: 26px; }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  /* scroll-driven act transforms follow the user's own scrolling, so they
+     stay; continuous/ambient animations stop */
+  .cine-car .moving-car,
+  .cine-car .car-susp,
+  .cine-car .speed-streak,
+  .cine-car .car-contact { animation: none; }
+  .cine-car .speed-streak { display: none; }
+}
