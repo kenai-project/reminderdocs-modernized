@@ -1,0 +1,509 @@
+/* ===== Cinematic story (one continuous dark journey) ===== */
+
+/* ---------- Compact navbar ---------- */
+.nav-inner { height: 64px; }
+.nav.cinema {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-bottom-color: transparent;
+  backdrop-filter: none;
+  transition: background 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease;
+}
+.nav.cinema.scrolled {
+  background: rgba(7, 13, 26, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.nav.cinema .brand, .nav.cinema .navlinks a { color: #e8eefb; }
+.nav.cinema .menu-btn { color: #fff; }
+.nav.cinema .btn-ghost { background: rgba(255, 255, 255, 0.08); color: #fff; border-color: rgba(255, 255, 255, 0.22); }
+.nav.cinema .navlinks.mobile { background: rgba(10, 18, 32, 0.97); border-bottom-color: rgba(255, 255, 255, 0.08); }
+.nav.cinema .navlinks.mobile a { color: #fff; }
+
+/* ---------- Scene plumbing ---------- */
+.scene-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 84px 20px 34px;
+}
+.scene-head { text-align: center; }
+.scene-head.small h2 { font-size: clamp(22px, 2.6vw, 34px); margin-bottom: 0; }
+.scene-head h2 { color: #fff; }
+.scene-head p { color: rgba(255, 255, 255, 0.62); }
+.scene-head .eyebrow { background: rgba(255, 255, 255, 0.12); color: #cfe0ff; }
+
+.scene-layer { position: absolute; inset: 0; pointer-events: none; }
+.scene-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(640px 400px at 78% 16%, rgba(23, 105, 255, 0.22), transparent 70%),
+    radial-gradient(560px 360px at 14% 72%, rgba(22, 184, 154, 0.16), transparent 70%);
+}
+.photo-bg {
+  position: absolute;
+  inset: -12% 0;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+.photo-veil { position: absolute; inset: 0; }
+.eyebrow.light { background: rgba(255, 255, 255, 0.12); color: #cfe0ff; }
+.scene-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 160px;
+  z-index: 4;
+  background: linear-gradient(180deg, transparent, var(--scene-end, var(--bg)));
+}
+
+/* ---------- S1 — cinematic photo hero ---------- */
+.hero-scene {
+  --scene-end: #0a1626;
+  position: relative;
+  min-height: 118vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #fff;
+}
+.hero-photo {
+  background-image:
+    linear-gradient(rgba(5, 10, 22, 0.42), rgba(5, 10, 22, 0.5)),
+    url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1920&q=80');
+  animation: heroZoom 26s ease-in-out infinite alternate;
+}
+@keyframes heroZoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.1) translateY(-2%); }
+}
+.hero-veil {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 10, 22, 0.58) 0%,
+    rgba(5, 10, 22, 0.2) 34%,
+    rgba(10, 22, 38, 0.85) 78%,
+    var(--scene-end) 100%
+  );
+}
+.float-chip {
+  position: absolute;
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  padding: 13px 17px;
+  border-radius: 16px;
+  background: rgba(12, 22, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px rgba(2, 8, 20, 0.45);
+  animation: chipFloat 5.4s ease-in-out infinite;
+}
+.float-chip b { display: block; font-size: 13px; letter-spacing: 0.05em; color: #fff; }
+.float-chip small { color: rgba(255, 255, 255, 0.72); font-size: 11px; }
+.chip-icon { font-size: 20px; }
+.chip-1 { top: 16%; left: 7%; }
+.chip-2 { top: 30%; right: 6%; }
+.chip-3 { bottom: 38%; left: 12%; }
+.chip-4 { top: 13%; right: 27%; }
+@keyframes chipFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+/* The car, driving across the bottom of the photo hero */
+.scene-car {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9vh;
+  margin: 0 auto;
+  width: min(320px, 58vw);
+  animation: carBob 3.6s ease-in-out infinite;
+}
+.car-art { width: 100%; height: auto; display: block; filter: drop-shadow(0 22px 30px rgba(2, 8, 20, 0.7)); }
+@keyframes carBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.scene-copy { position: relative; z-index: 5; text-align: center; }
+.scene-copy h1 { color: #fff; margin: 18px 0; text-shadow: 0 4px 30px rgba(2, 8, 20, 0.6); }
+.scene-copy p { color: rgba(255, 255, 255, 0.85); margin: 0 auto; max-width: 640px; text-shadow: 0 2px 18px rgba(2, 8, 20, 0.7); }
+.scene-copy .hero-actions { justify-content: center; }
+.scene-copy .trust { color: rgba(255, 255, 255, 0.75); }
+
+.scene-scroll-cue {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  width: 26px;
+  height: 42px;
+  margin-left: -13px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  z-index: 6;
+}
+.scene-scroll-cue span {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 4px;
+  height: 9px;
+  margin-left: -2px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  animation: cueDrop 1.6s ease-in-out infinite;
+}
+@keyframes cueDrop {
+  0% { transform: translateY(0); opacity: 1; }
+  70% { transform: translateY(14px); opacity: 0; }
+  100% { transform: translateY(14px); opacity: 0; }
+}
+
+/* ---------- S2 — document chain (dark, connected to hero) ---------- */
+.chain {
+  position: relative;
+  padding: 40px 0 80px;
+  background: linear-gradient(180deg, #0a1626 0%, #0b1830 100%);
+  color: #fff;
+}
+.chain .section-head h2 { color: #fff; }
+.chain .section-head p { color: rgba(255, 255, 255, 0.62); }
+.chain .eyebrow { background: rgba(255, 255, 255, 0.12); color: #cfe0ff; }
+.chain-node { display: flex; justify-content: center; }
+.vehicle-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  padding: 18px 30px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 60px rgba(2, 8, 20, 0.5);
+}
+.vehicle-node svg { width: min(240px, 60vw); height: auto; }
+.vehicle-node b { font-size: 17px; letter-spacing: 0.04em; color: #fff; }
+.vehicle-node small { color: rgba(255, 255, 255, 0.6); font-weight: 700; }
+.chain-docs { max-width: 620px; margin: 6px auto 0; }
+.chain-link { height: 38px; width: 0; margin: 0 auto; border-left: 2px dashed #46608a; position: relative; }
+.chain-link::after {
+  content: '▾';
+  position: absolute;
+  bottom: -8px;
+  left: -6.5px;
+  color: #8ba3c7;
+  font-size: 13px;
+}
+.doc-card {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 60px rgba(2, 8, 20, 0.5);
+}
+.doc-card h3 { margin: 0 0 4px; font-size: 18px; color: #fff; }
+.doc-card p { margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 14px; }
+.doc-code {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+.doc-code.big { width: 64px; height: 64px; font-size: 16px; }
+.depth-1 { transform: scale(0.97); }
+
+/* ---------- S3 — one continuous journey scene (dark, sticky) ---------- */
+/* NOTE: no overflow:hidden here — it would break position:sticky pinning */
+.journey-story {
+  --scene-end: #0b1830;
+  position: relative;
+  height: 430vh;
+  color: #fff;
+  background: linear-gradient(180deg, #0b1830 0%, #0c1d33 50%, #0b1830 100%);
+}
+.journey-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 60vh;
+}
+.journey-stage > * { grid-area: 1 / 1; }
+
+.j-doc {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  width: min(440px, 88vw);
+  padding: 26px 30px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 30px 80px rgba(2, 8, 20, 0.55);
+  will-change: transform, opacity;
+}
+.j-doc h3 { margin: 0 0 6px; font-size: 24px; color: #fff; }
+.j-doc p { margin: 0; color: rgba(255, 255, 255, 0.72); }
+
+.j-count { text-align: center; will-change: transform, opacity; }
+.j-count strong {
+  display: block;
+  line-height: 0.95;
+  font-size: clamp(100px, 18vw, 190px);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  background: linear-gradient(180deg, #ffffff, #8fb6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 12px 40px rgba(23, 105, 255, 0.35));
+}
+.j-count span { letter-spacing: 0.42em; font-size: 13px; font-weight: 800; color: rgba(255, 255, 255, 0.6); }
+
+.j-sched {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 15px 26px;
+  border-radius: 999px;
+  background: rgba(22, 184, 154, 0.2);
+  border: 1px solid rgba(22, 184, 154, 0.5);
+  color: #c9f7ea;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 20px 60px rgba(22, 184, 154, 0.18);
+  will-change: transform, opacity;
+}
+
+.j-phone { will-change: transform, opacity; }
+.phone {
+  position: relative;
+  width: 250px;
+  height: 500px;
+  border-radius: 40px;
+  background: #0d1526;
+  border: 6px solid #26395c;
+  box-shadow: 0 50px 110px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+.phone-notch {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 100px;
+  height: 20px;
+  margin-left: -50px;
+  background: #0d1526;
+  border: 1px solid #26395c;
+  border-radius: 999px;
+  z-index: 2;
+}
+.phone-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 46px 15px 12px;
+  background: linear-gradient(180deg, #16233d 0%, #0d1728 100%);
+}
+.phone-app { display: flex; gap: 9px; align-items: center; color: #fff; font-weight: 800; font-size: 14px; }
+.phone-app .logo { width: 28px; height: 28px; border-radius: 9px; font-size: 13px; box-shadow: none; }
+.phone-notif {
+  display: flex;
+  gap: 11px;
+  margin-top: 10px;
+  padding: 15px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  will-change: transform, opacity;
+}
+.phone-notif b { display: block; color: #fff; font-size: 14px; }
+.phone-notif small { display: block; margin: 5px 0 9px; color: rgba(255, 255, 255, 0.75); font-size: 12px; }
+.notif-cta { color: #9cd7ff; font-size: 12px; font-weight: 800; letter-spacing: 0.03em; }
+.notif-bell { font-size: 22px; }
+.phone-dots { margin-top: auto; display: flex; justify-content: center; gap: 6px; padding-bottom: 10px; }
+.phone-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); }
+.phone-dots i:first-child { background: #fff; }
+
+.j-dash { width: 100%; display: flex; justify-content: center; will-change: transform, opacity; }
+.dash-frame {
+  width: min(540px, 94vw);
+  padding: 22px;
+  border-radius: 26px;
+  background: rgba(13, 26, 47, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 50px 120px rgba(0, 0, 0, 0.6);
+}
+.dash-frame-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.75);
+}
+.dash-vehicle {
+  margin-bottom: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  will-change: transform, opacity;
+}
+.dv-head { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; color: #fff; font-weight: 800; }
+.dv-icon { font-size: 20px; }
+.dv-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.82);
+  border-top: 1px dashed rgba(255, 255, 255, 0.16);
+}
+.dv-row em { font-style: normal; font-weight: 800; }
+.dv-row em.ok { color: #34d399; }
+.dv-row em.soon { color: var(--warning); }
+.dash-foot { padding-top: 6px; text-align: center; font-size: 12px; letter-spacing: 0.05em; color: rgba(255, 255, 255, 0.6); }
+
+.story-steps { display: flex; gap: 9px; flex-wrap: wrap; justify-content: center; }
+.story-steps span {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+.story-steps span.on { background: rgba(255, 255, 255, 0.16); color: #fff; border-color: rgba(255, 255, 255, 0.45); }
+
+/* ---------- S4 — vehicle parade (dark) ---------- */
+.parade {
+  position: relative;
+  padding: 70px 0 70px;
+  background: #0b1830;
+  color: #fff;
+}
+.parade .section-head h2 { color: #fff; }
+.parade .section-head p { color: rgba(255, 255, 255, 0.62); }
+.parade .eyebrow { background: rgba(255, 255, 255, 0.12); color: #cfe0ff; }
+.parade-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: clamp(16px, 4vw, 48px);
+  margin: 30px 0 26px;
+}
+.parade-vehicle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  padding: 20px 22px 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 60px rgba(2, 8, 20, 0.45);
+}
+.parade-vehicle svg { width: clamp(96px, 13vw, 170px); height: auto; }
+.parade-vehicle small { font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.6); }
+.parade-converge {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: rgba(22, 184, 154, 0.16);
+  border: 1px solid rgba(22, 184, 154, 0.45);
+  color: #c9f7ea;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+/* ---------- S5 — benefits (dark) ---------- */
+.benefits {
+  position: relative;
+  padding: 40px 0 100px;
+  background: linear-gradient(180deg, #0b1830 0%, #0a1626 100%);
+  color: #fff;
+}
+.benefits .section-head h2 { color: #fff; }
+.benefits .section-head p { color: rgba(255, 255, 255, 0.62); }
+.benefits .eyebrow { background: rgba(255, 255, 255, 0.12); color: #cfe0ff; }
+.card.benefit { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.16); }
+.card.benefit h3 { color: #fff; }
+.card.benefit p { color: rgba(255, 255, 255, 0.62); }
+.card.benefit .icon { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
+
+/* Directional entrances for benefit cards (pre-reveal state only) */
+.reveal:not(.visible).from-left { transform: translateX(-56px); }
+.reveal:not(.visible).from-right { transform: translateX(56px); }
+.reveal:not(.visible).from-up { transform: translateY(-42px); }
+
+/* ---------- S6 — keep moving (photo finale) ---------- */
+.keep-moving {
+  position: relative;
+  min-height: 96vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #fff;
+  background: #0a1626;
+}
+.km-photo {
+  background-image:
+    linear-gradient(rgba(6, 12, 26, 0.45), rgba(6, 12, 26, 0.65)),
+    url('https://images.unsplash.com/photo-1465447142348-e9952c393450?auto=format&fit=crop&w=1920&q=80');
+  animation: heroZoom 30s ease-in-out infinite alternate;
+}
+.km-veil {
+  background: linear-gradient(
+    180deg,
+    #0a1626 0%,
+    rgba(10, 22, 38, 0.15) 30%,
+    rgba(10, 22, 38, 0.3) 65%,
+    #0f172a 100%
+  );
+}
+.km-copy { position: relative; z-index: 2; text-align: center; padding: 140px 0 160px; }
+.km-copy h2 { color: #fff; font-size: clamp(48px, 6.5vw, 88px); letter-spacing: -0.045em; margin: 16px 0 10px; text-shadow: 0 6px 40px rgba(2, 8, 20, 0.65); }
+.km-copy p { color: rgba(255, 255, 255, 0.85); font-size: 19px; margin: 0 0 30px; text-shadow: 0 2px 18px rgba(2, 8, 20, 0.7); }
+.btn.big { padding: 15px 28px; font-size: 16px; border-radius: 14px; }
+
+/* ---------- Responsive & motion ---------- */
+@media (max-width: 860px) {
+  .chip-3, .chip-4 { display: none; }
+  .journey-story { height: 380vh; }
+  .phone { width: 220px; height: 440px; }
+  .scene-pin { padding-top: 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo, .km-photo, .float-chip, .scene-scroll-cue span { animation: none; }
+}
